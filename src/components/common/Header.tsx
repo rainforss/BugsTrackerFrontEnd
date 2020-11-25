@@ -22,11 +22,6 @@ export default function Header() {
                 About
               </NavLink>
             </Nav.Item>
-            <Nav.Item className="p-2">
-              <NavLink activeStyle={activeStyle} to="/bugs">
-                Bugs
-              </NavLink>
-            </Nav.Item>
           </Nav>
         </Navbar.Collapse>
       </Container>

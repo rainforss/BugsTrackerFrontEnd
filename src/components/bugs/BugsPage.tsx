@@ -1,114 +1,68 @@
-import React, { ChangeEvent, Component, Reducer, SyntheticEvent } from "react";
-import { Button, Container, Form } from "react-bootstrap";
-import RadioInput from "../common/RadioInput";
-import SelectInput from "../common/SelectInput";
-import TextInput from "../common/TextInput";
+import React, { useEffect } from "react";
+import { Container } from "react-bootstrap";
 import { connect } from "react-redux";
 import { RootState } from "../../redux/reducers";
 import * as bugActions from "../../redux/actions/bugActions";
 import { IBug } from "../../types/entityTypes.d";
-import { AnyAction, Dispatch } from "redux";
-
-interface StateProps {
-  bug: IBug;
-}
+import FrameworkBugList from "./FrameworkBugList";
+import { useParams } from "react-router-dom";
 
 interface IBugsPageProps {
-  dispatch: Dispatch<AnyAction>;
+  createBug: (bug: IBug) => void;
+  loadBugs(
+    languageId: string,
+    environmentType: string,
+    environmentId: string
+  ): Promise<void>;
   bugs: Array<IBug>;
 }
 
-class Bug implements IBug {
-  constructor(
-    name: string = "",
-    description: string = "",
-    languageId: string = "",
-    libraryId: string = "",
-    frameworkId: string = ""
-  ) {
-    this.name = name;
-    this.description = description;
-    this.languageId = languageId;
-    this.libraryId = libraryId;
-    this.frameworkId = frameworkId;
-  }
-  name: string;
-  description: string;
+interface ParamTypes {
   languageId: string;
-  libraryId: string;
-  frameworkId: string;
+  environmentType: string;
+  environmentId: string;
 }
 
-class BugsPage extends Component<IBugsPageProps, StateProps> {
-  state = {
-    bug: new Bug(),
-  };
+// class Bug implements IBug {
+//   constructor(
+//     name: string = "",
+//     description: string = "",
+//     languageId: string = "",
+//     libraryId: string = "",
+//     frameworkId: string = ""
+//   ) {
+//     this.name = name;
+//     this.description = description;
+//     this.languageId = languageId;
+//     this.libraryId = libraryId;
+//     this.frameworkId = frameworkId;
+//   }
+//   name: string;
+//   description: string;
+//   languageId: string;
+//   libraryId: string;
+//   frameworkId: string;
+// }
 
-  handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const bug = {
-      ...this.state.bug,
-      [event.currentTarget.name]: event.currentTarget.value,
-    };
-    this.setState({ bug });
-  };
+const BugsPage = ({ loadBugs, bugs }: IBugsPageProps) => {
+  const {
+    languageId,
+    environmentType,
+    environmentId,
+  } = useParams<ParamTypes>();
 
-  handleSubmit = (event: SyntheticEvent) => {
-    event.preventDefault();
-    this.props.dispatch(bugActions.createBug(this.state.bug));
-  };
+  useEffect(() => {
+    loadBugs(languageId, environmentType, environmentId).catch((error) => {
+      alert("Loading bugs failed" + error);
+    });
+  }, [environmentId, environmentType, languageId, loadBugs]);
 
-  render() {
-    console.log(this.state.bug);
-    return (
-      <Container>
-        <Form onSubmit={this.handleSubmit}>
-          <h2>Bugs</h2>
-          <h3>Add Bug</h3>
-          <TextInput
-            label="Name"
-            id="bugName"
-            name="name"
-            type="text"
-            placeholder="weird bug"
-            onChange={this.handleChange}
-          />
-          <TextInput
-            label="Description"
-            id="bugDescription"
-            name="description"
-            type="textarea"
-            placeholder="The bug looks like..."
-            onChange={this.handleChange}
-          />
-          <SelectInput
-            id="language"
-            name="language"
-            label="Language"
-            value="2"
-            options={[
-              { id: "1", name: "Javascript" },
-              { id: "2", name: "Python" },
-              { id: "3", name: "C#" },
-            ]}
-          />
-          <RadioInput
-            name="environmentType"
-            options={[
-              { name: "Framework", id: "framework" },
-              { name: "Library", id: "library" },
-            ]}
-          />
-          <Button variant="primary" type="submit">
-            Add
-          </Button>
-          {this.props.bugs.map((bug: IBug) => (
-            <div key={bug.name}>{bug.name}</div>
-          ))}
-        </Form>
-      </Container>
-    );
-  }
-}
+  return (
+    <Container>
+      <FrameworkBugList bugs={bugs} />
+    </Container>
+  );
+};
 
 function mapStateToProps(state: RootState) {
   return {
@@ -116,4 +70,9 @@ function mapStateToProps(state: RootState) {
   };
 }
 
-export default connect(mapStateToProps)(BugsPage);
+const mapDispatchToProps = {
+  createBug: bugActions.createBug,
+  loadBugs: bugActions.loadBugs,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BugsPage);

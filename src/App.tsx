@@ -14,7 +14,10 @@ function App() {
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route path="/about" component={AboutPage} />
-        <Route path="/bugs" component={BugsPage} />
+        <Route
+          path="/languages/:languageId/:environmentType/:environmentId/bugs"
+          component={BugsPage}
+        />
         <Route component={NotFoundPage} />
       </Switch>
     </Container>
