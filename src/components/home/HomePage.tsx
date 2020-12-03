@@ -78,8 +78,6 @@ function HomePage({
     }
   };
 
-  console.log(language);
-
   return (
     <div>
       <Jumbotron>

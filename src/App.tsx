@@ -6,6 +6,7 @@ import { Route, Switch } from "react-router-dom";
 import Header from "./components/common/Header";
 import NotFoundPage from "./components/NotFoundPage";
 import BugsPage from "./components/bugs/BugsPage";
+import ManageBugPage from "./components/bugs/ManageBugPage";
 
 function App() {
   return (
@@ -14,6 +15,10 @@ function App() {
       <Switch>
         <Route exact path="/" component={HomePage} />
         <Route path="/about" component={AboutPage} />
+        <Route
+          path="/languages/:languageId/:environmentType/:environmentId/bugs/:bugId"
+          component={ManageBugPage}
+        />
         <Route
           path="/languages/:languageId/:environmentType/:environmentId/bugs"
           component={BugsPage}
